@@ -1,34 +1,34 @@
 pipeline {
-    agent any 
-    
-    stages{
-        stage("Clone Code"){
+    agent any
+    stages {
+        stage("Clone Code") {
             steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
+               echo "Cloning the Code"
+               git url:"https://github.com/ShubhamMahile/django-notes-app.git", branch:"main"
             }
         }
-        stage("Build"){
+        stage("Build") {
             steps {
-                echo "Building the image"
-                sh "docker build -t my-note-app ."
+               echo "Building an Image"
+               bat "docker build -t my-note-app ."
             }
         }
-        stage("Push to Docker Hub"){
+         stage("Push to docker hub") {
             steps {
-                echo "Pushing the image to docker hub"
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
-                }
+                 echo "Pushing an Image to Docker Hub"
+                 withCredentials([usernamePassword(credentialsId: "dockerHub", usernameVariable: "dockerHubUser", passwordVariable: "dockerHubPass")])
+                 {
+                   bat "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
+                   bat "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                   bat "docker push ${env.dockerHubUser}/my-note-app:latest"
+                 }
             }
         }
-        stage("Deploy"){
+        stage("Deploy") {
             steps {
-                echo "Deploying the container"
-                sh "docker-compose down && docker-compose up -d"
-                
+                 echo "Deploying Container"
+                 //bat "docker run -d -p 8000:8000 shubhammahile/my-note-app:latest"
+                 bat "docker-compose down && docker-compose up -d"
             }
         }
     }
